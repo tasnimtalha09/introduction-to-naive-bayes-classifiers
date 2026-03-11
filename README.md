@@ -9,7 +9,7 @@ The dataset contained roughly **87% ham** and **13% spam**, showing a natural im
 ![Ham vs. Spam Distribution](assets/ham_vs_spam.png)
 ***Figure 01:** Ham vs. Spam Distribution.*
 
-***A video presentation explaining the project can be found [here](https://shorturl.at/eCKIP).***
+***A video presentation explaining the project can be found [here](https://github.com/tasnimtalha09/introduction-to-naive-bayes-classifiers).***
 
 
 # Business Problem
