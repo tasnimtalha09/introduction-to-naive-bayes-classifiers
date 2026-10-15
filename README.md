@@ -6,7 +6,7 @@
 
 This project explores and compares three Naive Bayes classifiers—**Multinomial**, **Bernoulli**, and **Gaussian**—using the **SMS Spam Collection** Dataset from the UCI Machine Learning Repository. The goal was to classify text messages as spam or ham (non-spam) through preprocessing, encoding, and applying probabilistic machine learning models.
 
-The dataset contained roughly **87% ham** and **13% spam**, showing a natural imbalance. The analysis focused on model performance, overfitting checks, and generalization ability through metrics like **accuracy, precision, recall, F1-score**, and **ROC-AUC**.
+The dataset contained roughly **87% ham** and **13% spam**, showing a natural imbalance. The analysis focused on model performance, overfitting checks, and generalization ability through metrics like **accuracy, precision, recall, F1 score**, and **ROC-AUC**.
 
 ![Ham vs. Spam Distribution](assets/ham_vs_spam.png)
 ***Figure 01:** Ham vs. Spam Distribution.*
@@ -30,14 +30,16 @@ The **three** naive bayes models require different types of encoders:
 2. **Bernoulli Naive Bayes**: `CountVectorizer(binary = True)`
 3. **Gaussian Naive Bayes**: `TfidfVectorizer()`
 
+Each vectorizer is bundled with its classifier in a scikit-learn `Pipeline`, so the vocabulary and TF-IDF weights are learned only from training data (no preprocessing leakage), including inside each cross-validation fold.
+
 ### Model Training & Performance Evaluation
-Now, we import the necessary libraries from scikit-learn, build the model objects, fit the train data, and predict the test data. Then, we evaluate the models using a bunch of metrics. Some of them are: accuracy, precision, recall, F1-score, and ROC-AUC score.
+Now, We fit each pipeline on the raw training text, predict the test text, and evaluate the models using accuracy, precision, recall, F1 score, and ROC-AUC.
 
 #### Accuracy & Classification Report
-A summary of the accuracy scores along with their classification reports (precision, recall, F1-score) of the three models on the test dataset are as follows:
+A summary of the accuracy scores along with their classification reports (precision, recall, F1 score) of the three models on the test dataset are as follows:
 
 ***Table 01:** Model Performance Comparison of Spam (Class 1).*
-| *Model* | Accuracy | Precision | Recall | F1-Score |
+| *Model* | Accuracy | Precision | Recall | F1 Score |
 |:------|:----------|:-----------|:--------|:----------|
 | ***MultinomialNB*** | 98.68% | 0.97 | 0.93 | 0.95 |
 | ***BernoulliNB*** | 97.19% | 0.99 | 0.79 | 0.88 |
@@ -72,25 +74,25 @@ We also plotted the ROC curves of all three models together for a visual compari
 The ROC curves show that **Multinomial Naive Bayes** and **Bernoulli Naive Bayes** both achieved excellent discrimination ability between spam and ham messages, with AUC scores of 99.066% and 99.128% respectively. They can be considered almost equal if we account for the decimal places. In contrast, **Gaussian Naive Bayes** performed notably worse, with an AUC of 89.53%, showing that it is less effective at distinguishing between the two classes.
 
 #### Overfitting Check
-Before finally selecting on a model, we want to check whether any of the models have any overfitting issues. Usually one of the telltale signs of overfitting is **a large difference between the training and testing accuracies of a model**. If a model has a very high training accuracy but a significantly lower testing accuracy, it may be overfitting the training data.
+Before finally selecting a model, we want to check whether any of the models have any overfitting issues. Usually one of the telltale signs of overfitting is **a large difference between the training and testing f1 scores of a model**. If a model has a very high training f1 score but a significantly lower testing f1 score, it may be overfitting the training data.
 
 ```
-Train & Test Accuracy and their Differences
+Train & Test F1 Scores (Spam) & their Differences
 
 For Multinomial Naive Bayes
-Train Accuracy: 99.36%
-Test Accuracy: 98.68%%
-Difference in accuracy: 0.67%
+Train F1: 97.62%
+Test F1: 95.00%
+Difference in F1: 2.62%
 
 For Bernoulli Naive Bayes
-Train Accuracy: 98.51%
-Test Accuracy: 97.19%
-Difference in accuracy: 1.32%
+Train F1: 94.16%
+Test F1: 88.34%
+Difference in F1: 5.83%
 
 For Gaussian Naive Bayes
-Train Accuracy: 93.77%
-Test Accuracy: 87.74%
-Difference in accuracy: 6.03%
+Train F1: 81.15%
+Test F1: 66.77%
+Difference in F1: 14.37%
 ```
 
 ##### Key Insights
@@ -104,12 +106,12 @@ Now, we want to have another check on how our models perform on new and unseen d
 ```
 Cross Validation Results of the Three Models
 
-Multinomial Naive Bayes: 97.59% ± 0.53%
-Bernoulli Naive Bayes: 97.08% ± 0.38%
-Gaussian Naive Bayes: 87.05% ± 1.00%
+Multinomial Naive Bayes: 93.79% ± 2.50%
+Bernoulli Naive Bayes: 85.78% ± 1.65%
+Gaussian Naive Bayes: 64.16% ± 2.62%
 ```
 
-![test](assets/cross_val.png)
+![cross_val](assets/cross_val.png)
 ***Figure 04:** Cross-Validation Results.*
 
 ##### Key Insights
@@ -120,20 +122,23 @@ To check their performance across the folds, we can visualize the results using 
 ![Heatmap](assets/heatmap.png)
 ***Figure 05:** Cross-Validation Heatmap.*
 
+##### Key Insights
+The fold-level results show whether the models' relative performance remains consistent across the five validation folds. **MultinomialNB** achieved the highest F1-score in every fold, reinforcing its position as the strongest performer in this comparison. **BernoulliNB** had a lower mean F1-score but less variation across folds, while **GaussianNB** consistently performed worst. These results support selecting MultinomialNB for further consideration, although the final assessment should also account for the held-out test results and the practical costs of false positives and false negatives.
+
 #### Best Model Selection
-Finally, we want to compare the performance of the three models across **three** specific metrics: Accuracy, F1-Score, and ROC-AUC Score. We will create a bar plot for each metric to visually compare the models.
+Finally, we want to compare the performance of the three models across **three** specific metrics: Accuracy, F1 Score, and ROC-AUC Score. We will create a bar plot for each metric to visually compare the models.
 
 ![Final Model Comparison](assets/model_comparison.png)
 ***Figure 06:** Final Model Comparison.*
 
 ##### Key Insights
-As we can see from the barchart above, **Multinomial Naive Bayes** scored the highest in Accuracy and F1 Score (Spam) whereas **Bernoulli Naive Bayes** scored the highest in the ROC-AUC Score with MultinomialNB trailing very closely behind. **Gaussian Naive Bayes** scored the lowest in all three metrics. 
+As shown in the chart, Multinomial Naive Bayes achieved the highest test accuracy and spam-class F1-score, while Bernoulli Naive Bayes achieved a marginally higher ROC-AUC. GaussianNB performed worst across all three metrics.
 
-Comparing from this chart and all the above insights, we can conclude that **Multinomial Naive Bayes** is the best model among the three.
+Given the importance of balancing precision and recall when detecting spam in this imbalanced dataset, **Multinomial Naive Bayes** is the strongest overall candidate among the three models.
 
 ## Conclusion
 
-So, from the above comparison(s), graphs, and confusion matrixes, we can see that **Multinomial Naive Bayes** emerged as the most effective spam detector, combining high accuracy (98.68%) with consistent generalization across folds. Its probabilistic handling of word frequency data makes it the optimal choice for text classification tasks of this nature.
+Based on the evaluation results, **Multinomial Naive Bayes** emerged as the strongest overall model for this SMS spam classification task. It achieved 98.68% test accuracy and a 95.00% spam-class F1-score, while also recording the highest mean cross-validation F1-score (93.79% ± 2.50%). Its strong performance with word-count features makes it a suitable candidate for this text classification problem.
 
 It makes the perfect sense since it accounts for how many times one word appears in a text. Gaussian Naive Bayes performed poorly because this dataset was a text-based one and GNB performs the best in numeric features. Although the dataset was encoded using TF-IDF, this model was not the best one for this dataset.
 
@@ -144,7 +149,7 @@ It makes the perfect sense since it accounts for how many times one word appears
 | Accuracy |  98.68%|
 | Precision |  97%|
 | Recall |  93%|
-| F1-score |  95%|
+| F1 Score |  95%|
 | False Positive Rate |  0.48%|
 | False Negative Rate |  6.70%|
 | ROC-AUC |  99.07%|
